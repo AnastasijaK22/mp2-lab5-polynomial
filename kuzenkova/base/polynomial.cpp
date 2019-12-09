@@ -2,10 +2,49 @@
 
 bool polynom_string::isCorrect()
 {
+	int length = str.length();
+	if (length == 0)
+		return false;
+	int k[3] = { 0,0,0 };
+	int flag = 0;
+	str = str + "+";
+	string acceptable = "xyz-+0123456789.";
+	for (int i = 0; i < length; i++)
+	{
+		if (acceptable.find(str[i]) == string::npos)
+			return false;
+		for (int j = 0; j < 3; j++)
+		{
+			if ((str[i] == acceptable[j]) && (flag == 0))
+			{
+				if (k[j] == 1)
+					return false;
+				k[j]++;
+				flag = 1;
+				break;
+			}
+			if (flag == 1)
+			{
+				if ((str[i] < '0') || (str[i] > '9'))
+					return false;
+				else
+				{
+					string temp = "xyz+-";
+					if (temp.find(str[i + 1]) != string::npos)
+						flag = 0;
+					else
+						return false;
+				}
+			}
+		}
+		if ((str[i] == '-') || (str[i] == '+'))
+			k[0] = k[1] = k[2] = 0;
+	}
+	str.erase(length);
 	return true;
 }
 
-List::List(polynom_string _s)
+Polynom::Polynom(polynom_string _s)
 {
 	Link* p = new Link;
 	p->coefficient = 0;
@@ -13,7 +52,7 @@ List::List(polynom_string _s)
 	p->pNext = nullptr;
 	pFirst = p;
 	string s = _s.getstr() + "+";
-	if (s[0] != '-')
+	if ((s[0] != '-') && (s[0] != '+'))
 		s = "+" + s;
 	int length = s.length();
 	int i = 0;
@@ -64,7 +103,7 @@ List::List(polynom_string _s)
 	Cancellation();
 }
 
-List::List(const List& l)
+Polynom::Polynom(const Polynom& l)
 {
 	Link* p = new Link;
 	pFirst = p;
@@ -83,7 +122,7 @@ List::List(const List& l)
 	}
 }
 
-List& List::operator=(const List& l)
+Polynom& Polynom::operator=(const Polynom& l)
 {
 	if (this != &l)
 	{
@@ -111,7 +150,7 @@ List& List::operator=(const List& l)
 	return *this;
 }
 
-void List::Insert(double c, int d)
+void Polynom::Insert(double c, int d)
 {
 	Link* p = new Link;
 	p->coefficient = c;
@@ -135,7 +174,7 @@ void List::Insert(double c, int d)
 	}
 }
 
-void List::Cancellation()
+void Polynom::Cancellation()
 {
 	Link* p = pFirst;
 	Link* pp = p->pNext;
@@ -175,63 +214,7 @@ void List::Cancellation()
 	//здесь могла быть ваша реализация :)
 }
 
-/*
-void List::SetPolynom(polynom_string _s)
-{
-	string s = _s.getstr() + "+";
-	if (s[0] != '-')
-		s = "+" + s;
-	int length = s.length();
-	int i = 0;
-	while (i != (length - 1))
-	{
-		double c;
-		if ((s[i + 1] == 'x') || (s[i + 1] == 'y') || (s[i + 1] == 'z'))
-		{
-			if (s[i] == '+')
-				c = 1;
-			else
-				c = -1;
-			i++;
-		}
-		else
-		{
-			string temp;
-			int j = s.find_first_of("-+xyz", i + 1);
-			while (i < j)
-			{
-				temp = temp + s[i];
-				i++;
-			}
-			c = stof(temp);
-		}
-		int x = 0, y = 0, z = 0;
-		for (int j = 0; j < 3; j++)
-		{
-			switch (s[i])
-			{
-			case 'x':
-				x = s[i + 1] - '0';
-				i += 2;
-				break;
-			case 'y':
-				y = s[i + 1] - '0';
-				i += 2;
-				break;
-			case 'z':
-				z = s[i + 1] - '0';
-				i += 2;
-				break;
-			}
-		}
-		int d = x * 10000 + y * 100 + z;
-		(*this).Insert(c, d);
-	}
-	(*this).Cancellation();
-}
-*/
-
-void List::print()
+void Polynom::print()
 {
 	Link* p = pFirst;
 	p = p->pNext;
@@ -278,7 +261,7 @@ void List::print()
 	cout << s;
 }
 
-void List::badprint()
+void Polynom::badprint()
 {
 	Link* p = pFirst;
 	while (p != nullptr)
@@ -288,7 +271,7 @@ void List::badprint()
 	}
 }
 
-List& List::operator+=(const List& l)
+Polynom& Polynom::operator+=(const Polynom& l)
 {
 	Link* p = l.pFirst->pNext;
 	while (p != nullptr)
@@ -300,16 +283,16 @@ List& List::operator+=(const List& l)
 	return *this;
 }
 
-List List::operator+(const List& l)
+Polynom Polynom::operator+(const Polynom& l)
 {
-	List temp(*this);
+	Polynom temp(*this);
 	temp += l;
 	return temp;
 }
 
-List List::operator*(const List& l)
+Polynom Polynom::operator*(const Polynom& l)
 {
-	List temp;
+	Polynom temp;
 	Link* p = pFirst->pNext;
 	while (p != nullptr)
 	{
@@ -325,9 +308,9 @@ List List::operator*(const List& l)
 	return temp;
 }
 
-List List::MultConst(double c)
+Polynom Polynom::MultConst(double c)
 {
-	List temp(*this);
+	Polynom temp(*this);
 	Link* p = temp.pFirst->pNext;
 	while (p != nullptr)
 	{
@@ -338,7 +321,7 @@ List List::MultConst(double c)
 	return temp;
 }
 
-double List::ValuePoint(double x, double y, double z)
+double Polynom::ValuePoint(double x, double y, double z)
 {
 	double result = 0;
 	Link* p = pFirst->pNext;

@@ -12,7 +12,9 @@ class polynom_string
 public:
 	polynom_string(string s)
 	{
-		str = s;
+		for (int i = 0; i < s.length(); i++)
+			if (s[i] != ' ')
+				str += s[i];
 		if (!isCorrect())
 			throw "Wrong polynom";
 	}
@@ -30,13 +32,13 @@ struct Link
 	int degree;
 };
 
-class List
+class Polynom
 {
 	Link* pFirst;
 	void Insert(double c, int d);
 	void Cancellation();
 public:
-	List()
+	Polynom()
 	{
 		Link* p = new Link;
 		p->coefficient = 0;
@@ -44,20 +46,20 @@ public:
 		p->pNext = nullptr;
 		pFirst = p;
 	}
-	List(polynom_string _s);
-	List(const List& l);
-	List& operator=(const List& l);
-	List& operator+=(const List& l);
-	List operator+(const List& l);
-	List operator*(const List& l);
-	List MultConst(double c);
+	Polynom(polynom_string _s);
+	Polynom(const Polynom& l);
+	Polynom& operator=(const Polynom& l);
+	Polynom& operator+=(const Polynom& l);
+	Polynom operator+(const Polynom& l);
+	Polynom operator*(const Polynom& l);
+	Polynom MultConst(double c);
 	double ValuePoint(double x, double y, double z);
 	//void Insert(double c, int d);
 	//void Cancellation();
 	//void SetPolynom(polynom_string _s);
 	void print();
 	void badprint();
-	~List()
+	~Polynom()
 	{
 		while (pFirst != nullptr)
 		{
