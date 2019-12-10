@@ -9,6 +9,7 @@ using namespace std;
 class polynom_string
 {
 	string str;
+	bool isCorrect();
 public:
 	polynom_string(string s)
 	{
@@ -18,7 +19,6 @@ public:
 		if (!isCorrect())
 			throw "Wrong polynom";
 	}
-	bool isCorrect();
 	string getstr() const
 	{
 		return str;
@@ -49,16 +49,14 @@ public:
 	Polynom(polynom_string _s);
 	Polynom(const Polynom& l);
 	Polynom& operator=(const Polynom& l);
+	bool operator==(const Polynom& l);
+	bool operator!=(const Polynom& l);
 	Polynom& operator+=(const Polynom& l);
 	Polynom operator+(const Polynom& l);
 	Polynom operator*(const Polynom& l);
 	Polynom MultConst(double c);
 	double ValuePoint(double x, double y, double z);
-	//void Insert(double c, int d);
-	//void Cancellation();
-	//void SetPolynom(polynom_string _s);
 	void print();
-	void badprint();
 	~Polynom()
 	{
 		while (pFirst != nullptr)

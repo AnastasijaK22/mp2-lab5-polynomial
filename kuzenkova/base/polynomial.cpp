@@ -7,8 +7,12 @@ bool polynom_string::isCorrect()
 		return false;
 	int k[3] = { 0,0,0 };
 	int flag = 0;
+	int point = 0;
+	int simbol = 0;
 	str = str + "+";
 	string acceptable = "xyz-+0123456789.";
+	if (str[0] == '.')
+		return false;
 	for (int i = 0; i < length; i++)
 	{
 		if (acceptable.find(str[i]) == string::npos)
@@ -21,6 +25,8 @@ bool polynom_string::isCorrect()
 					return false;
 				k[j]++;
 				flag = 1;
+				point = 0;
+				simbol = 0;
 				break;
 			}
 			if (flag == 1)
@@ -38,8 +44,32 @@ bool polynom_string::isCorrect()
 			}
 		}
 		if ((str[i] == '-') || (str[i] == '+'))
-			k[0] = k[1] = k[2] = 0;
+		{
+			if (simbol > 0)
+				return false;
+			else
+			{
+				k[0] = k[1] = k[2] = 0;
+				simbol++;
+			}
+		}
+		if ((str[i] >= '0') && (str[i] <= '9'))
+			simbol = 0;
+		if (str[i] == '.')
+		{
+			if (point > 0)
+				return false;
+			else
+			{
+				if ((str[i - 1] < '0') || (str[i - 1] > '9'))
+					return false;
+				else
+					point++;
+			}
+		}
 	}
+	if ((str[length - 1] == '-') || (str[length - 1] == '+'))
+		return false;
 	str.erase(length);
 	return true;
 }
@@ -211,7 +241,6 @@ void Polynom::Cancellation()
 			delete pp;
 		}
 	}
-	//здесь могла быть ваша реализация :)
 }
 
 void Polynom::print()
@@ -251,7 +280,6 @@ void Polynom::print()
 			s += "z";
 			s += to_string(z);
 		}
-		//cout << p->coefficient << 'x' << x << 'y' << y << 'z' << z;
 		p = p->pNext;
 	}
 	if (s.length() == 0)
@@ -259,16 +287,6 @@ void Polynom::print()
 	if (s[0] == '+')
 		s.erase(0, 1);
 	cout << s;
-}
-
-void Polynom::badprint()
-{
-	Link* p = pFirst;
-	while (p != nullptr)
-	{
-		cout << p->coefficient << ' ' << p->degree << endl;
-		p = p->pNext;
-	}
 }
 
 Polynom& Polynom::operator+=(const Polynom& l)
@@ -335,4 +353,32 @@ double Polynom::ValuePoint(double x, double y, double z)
 		p = p->pNext;
 	}
 	return result;
+}
+
+bool Polynom::operator==(const Polynom& l)
+{
+	Link* p = l.pFirst->pNext;
+	Link* pp = pFirst->pNext;
+	while ((p != nullptr) && (pp != nullptr))
+	{
+		if (p->degree != pp->degree)
+			return false;
+		else
+		{
+			if (p->coefficient != pp->coefficient)
+				return false;
+		}
+		p = p->pNext;
+		pp = pp->pNext;
+	}
+	if (((p != nullptr) && (pp == nullptr)) || ((pp != nullptr) && (p == nullptr)))
+		return false;
+	return true;
+}
+
+bool Polynom::operator!=(const Polynom& l)
+{
+	if (*this == l)
+		return false;
+	return true;
 }
