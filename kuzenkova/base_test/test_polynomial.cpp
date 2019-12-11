@@ -105,3 +105,46 @@ TEST(Polynom, count_at_the_point)
 	Polynom p1(str1);
 	EXPECT_EQ(p1.ValuePoint(2, -3, -1), 2);
 }
+
+TEST(Polynom, different_polynoms_not_equal)
+{
+	polynom_string str1("2x1y1z2+y2-5z3");
+	polynom_string str2("10x1+5y2");
+	Polynom p1(str1);
+	Polynom p2(str2);
+	bool flag = p1 == p2;
+	EXPECT_EQ(flag, false);
+}
+
+TEST(Polynom, create_polynom_with_exist_polynom)
+{
+	polynom_string str1("5x7y4+8y6");
+	Polynom p1(str1);
+	Polynom p2(p1);
+	bool flag = (p1 == p2);
+	EXPECT_EQ(flag, true);
+	p2 = p2 + p1;
+	flag = p1 != p2;
+	EXPECT_EQ(flag, true);
+}
+
+TEST(Polynom, can_mult_polynom_on_zero)
+{
+	polynom_string str1("5x7y4+8y6");
+	Polynom p1(str1);
+	polynom_string str2("0");
+	Polynom p2(str2);
+	bool flag = p1.MultConst(0) == p2;
+	EXPECT_EQ(flag, true);
+}
+
+TEST(Polynom, plus_equal_is_correct)
+{
+	polynom_string str1("4x2+y6-z3");
+	polynom_string str2("2x2+y8-y6");
+	polynom_string str3("6x2+y8-z3");
+	Polynom p1(str1), p2(str2), p3(str3);
+	p1 += p2;
+	bool flag = p1 == p3;
+	EXPECT_EQ(flag, true);
+}
